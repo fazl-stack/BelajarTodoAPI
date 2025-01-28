@@ -2,10 +2,11 @@ const { Schema, model, Types } = require("mongoose");
 
 const categorySchema = Schema(
   {
-    // userid: {
-    //   type: Types.ObjectId,
-    //   required: true,
-    // },
+    userid: {
+      type: Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     name: {
       type: String,
       minlength: [3, "name category min 3 characters"],

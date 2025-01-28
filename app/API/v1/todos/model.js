@@ -2,10 +2,11 @@ const { Schema, model, Types } = require("mongoose");
 
 const todoSchema = Schema(
   {
-    // userid: {
-    //   type: Types.ObjectId,
-    //   required: true,
-    // },
+    userid: {
+      type: Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     category: {
       type: Types.ObjectId,
       ref: "Category",

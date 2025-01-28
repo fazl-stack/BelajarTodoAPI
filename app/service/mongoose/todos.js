@@ -6,6 +6,9 @@ const getAllTodo = async (req) => {
   const { page, limit, keyword, category, priority, isDone } = req.query;
   const condition = {};
 
+  console.log(req.user);
+
+  if (userid) condition.userid = req.user.userid;
   if (category) condition.category = category;
   if (keyword) condition.title = { $regex: keyword, $options: "i" };
 
@@ -20,8 +23,14 @@ const getAllTodo = async (req) => {
 const createTodos = async (req) => {
   const { category, title, desc, priority } = req.body;
 
-  await checkingCategory(category);
-  const result = await Todo.create({ category, title, desc, priority });
+  await checkingCategory(category, req.user.userid);
+  const result = await Todo.create({
+    userid: req.user.userid,
+    category,
+    title,
+    desc,
+    priority,
+  });
   return result;
 };
 
@@ -29,7 +38,10 @@ const getOneTodo = async (req) => {
   const { id } = req.params;
 
   //populate buat ngambil data, select buat milih data yg mau diambil
-  const result = await Todo.findOne({ _id: id }).populate({
+  const result = await Todo.findOne({
+    _id: id,
+    userid: req.user.userid,
+  }).populate({
     path: "category",
     select: "name",
   });
@@ -41,18 +53,21 @@ const updateTodo = async (req) => {
   const { id } = req.params;
   const { category, title, desc, priority } = req.body;
   const result = await Todo.findOneAndUpdate(
-    { _id: id },
+    { _id: id, userid: req.user.userid },
     { category, title, desc, priority }
   );
 
-  await checkingCategory(category);
+  await checkingCategory(category, req.user.userid);
   if (!result) throw new notFoundError("todo not found");
   return result;
 };
 
 const deleteTodo = async (req) => {
   const { id } = req.params;
-  const result = await Todo.findOneAndDelete({ _id: id });
+  const result = await Todo.findOneAndDelete({
+    _id: id,
+    userid: req.user.userid,
+  });
   if (!result) throw new notFoundError("todo not found");
   return result;
 };

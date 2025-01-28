@@ -1,10 +1,14 @@
 const { StatusCodes } = require("http-status-codes");
-const { register, login } = require("../../../service/mongoose/users");
+const {
+  register,
+  login,
+  updateUser,
+} = require("../../../service/mongoose/users");
 
 const signUp = async (req, res, next) => {
   try {
-    const user = await register(req);
-    res.status(StatusCodes.CREATED).json({ status: "success", user });
+    const token = await register(req);
+    res.status(StatusCodes.CREATED).json({ status: "success", token });
   } catch (error) {
     next(error);
   }
@@ -12,10 +16,21 @@ const signUp = async (req, res, next) => {
 
 const signIn = async (req, res, next) => {
   try {
-    const user = await login(req);
-    res.status(StatusCodes.OK).json({ status: "success", user });
+    const token = await login(req);
+    res.status(StatusCodes.OK).json({ status: "success", token });
   } catch (error) {
     next(error);
   }
 };
-module.exports = { signUp, signIn };
+
+const update = async (req, res, next) => {
+  try {
+    await updateUser(req);
+    res
+      .status(StatusCodes.OK)
+      .json({ status: "success", message: "update user successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+module.exports = { signUp, signIn, update };
